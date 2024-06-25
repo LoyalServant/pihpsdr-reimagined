@@ -1,0 +1,43 @@
+#!/bin/bash
+# an attempt to make a "Windows" distributable bundle.
+
+# Define the paths
+EXECUTABLE=$1
+DEST_DIR=$2
+
+if [ -z "$EXECUTABLE" ] || [ -z "$DEST_DIR" ]; then
+    echo "Usage: $0 <executable> <destination_directory>"
+    exit 1
+fi
+
+# Create the destination directory if it doesn't exist
+mkdir -p "$DEST_DIR"
+
+# Copy the executable itself to the destination directory
+cp -u "$EXECUTABLE" "$DEST_DIR"
+echo "Copied executable $EXECUTABLE to $DEST_DIR"
+
+# Copy the assets directory if it exists
+if [ -d "assets" ]; then
+    cp -ru "assets" "$DEST_DIR"
+    echo "Copied assets directory to $DEST_DIR"
+else
+    echo "Warning: assets directory not found"
+fi
+
+# Use ldd to get the list of dependencies and filter out system DLLs
+ldd "$EXECUTABLE" | grep "=> /" | awk '{print $3}' | while read -r DLL; do
+    # Filter out Windows system DLLs
+    if [[ "$DLL" != /c/WINDOWS/* ]] && [[ "$DLL" != /c/Windows/* ]]; then
+        if [ -f "$DLL" ]; then
+            cp -u "$DLL" "$DEST_DIR"
+            echo "Copied $DLL to $DEST_DIR"
+        else
+            echo "Warning: $DLL not found"
+        fi
+    else
+        echo "Skipping system DLL: $DLL"
+    fi
+done
+
+echo "Done."

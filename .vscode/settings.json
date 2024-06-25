@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "windows.h": "c",
+        "ipmib.h": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "discovery.h": "c",
+        "types.h": "c",
+        "mystring.h": "c",
+        "iphlpapi.h": "c",
+        "comm.h": "c",
+        "xutility": "c",
+        "bandstack.h": "c",
+        "gtk.h": "c"
+    }
+}
